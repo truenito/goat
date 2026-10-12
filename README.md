@@ -77,7 +77,7 @@ Goat keeps every Omarchy shortcut and adds these (`hypr/bindings.lua`):
 | `Super` + `W` | Closes the focused window. A Steam window quits Steam completely instead of hiding it in the background |
 | `Super` + `Ctrl` + `N` | Toggles a gentle nightlight at 5500K (Omarchy's stock one is a stronger 4000K) |
 | `End` | Rebuilds the **work layout** across both monitors (see [Layouts](#layouts)) |
-| `Super` + `End` | Rebuilds the **off-work layout**: quits Slack and puts Discord in its place |
+| `Super` + `End` | Rebuilds the **off-work layout**: quits Slack, gives Discord most of the screen, and puts a terminal under Claude |
 | `XF86Tools` | Deafens in Discord, even when Discord isn't focused |
 | `XF86Launch5` | Mutes in Discord, even when Discord isn't focused |
 
@@ -102,15 +102,21 @@ DP-2 · workspace 2                       DP-1 · workspace 10
 
 ```
 DP-2 · workspace 2                       DP-1 · workspace 10
-┌─────────────┬─────────────────┐        ┌──────────────┬──────────┐
-│             │                 │        │    Claude    │          │
-│   Discord   │     ChatGPT     │        ├──────────────┤   Zen    │
-│             │                 │        │  Claude Code │          │
-└─────────────┴─────────────────┘        └──────────────┴──────────┘
+┌──────────────────────┬────────┐        ┌──────────┬──────────────┐
+│                      │        │        │  Claude  │              │
+│       Discord        │ChatGPT │        │          │     Zen      │
+│                      │        │        ├──────────┤              │
+│                      │        │        │ Terminal │              │
+└──────────────────────┴────────┘        └──────────┴──────────────┘
 ```
 
-Off-work quits Slack, and a terminal that's already open is kept out of
-sight. The right-hand monitor is the same in both.
+Off-work quits Slack and gives Discord most of the screen. On the left,
+Claude gets most of its column with a small terminal underneath, and Claude
+Code stays out of sight if it's running.
+
+Workspace 10 uses Hyprland's scrolling layout: windows sit in centered
+columns instead of stretching across the whole screen. Workspace 2 tiles
+normally.
 
 Rebuilding never closes or restarts what's already running. Open windows are
 moved back into place and resized; an app is launched only if it isn't open,
@@ -174,7 +180,11 @@ resize "$slack" 1074 "$(height_of "$slack")"   # then set sizes
 - **Order is the split.** Each new window splits the window focused just
   before it, landing to its right (or below it, if that window is taller than
   wide). So `focus "$slack"` before opening ChatGPT puts ChatGPT next to Slack.
-- **`resize <window> <width> <height>`** sets a size in pixels. Resize the left
+- **On workspace 10** (scrolling), each new window opens as a column to the
+  right of the focused one. `stack <window>` tucks it under the column to its
+  left, `column_width <window> 0.32` sets a column's width as a fraction of
+  the screen, and `set_height <window> 873` sets a height in pixels.
+- **`resize <window> <width> <height>`** sets a size in pixels on workspace 2. Resize the left
   or top window of a pair; resizing the right or bottom one moves the wrong edge.
 - **`LAYOUT_CLASSES`** near the top lists every app the script manages. It
   parks them out of sight before rebuilding, so the layout comes out the same

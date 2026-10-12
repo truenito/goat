@@ -3,20 +3,26 @@
 #
 # Usage: startup-layout.sh [work|off|auto]   (default: auto)
 #
-#   work, DP-2 / workspace 2:  Slack   | ChatGPT | Discord
-#                                      | foot    |
-#   off,  DP-2 / workspace 2:  Discord | ChatGPT   (Slack is closed; a running
-#                                                  foot stays hidden in the stash)
-#   both, DP-1 / workspace 10: Claude       | Zen
-#                              Claude Code  |
+#   work, DP-2 / workspace 2:   Slack   | ChatGPT | Discord
+#                                       | foot    |
+#   work, DP-1 / workspace 10:  Claude       | Zen
+#                               Claude Code  |
+#
+#   off,  DP-2 / workspace 2:   Discord | ChatGPT   (Slack is closed)
+#   off,  DP-1 / workspace 10:  Claude | Zen
+#                               foot   |            (Claude Code stays hidden)
 #
 # auto picks off on weekends and on weekdays before 6 AM or from 7 PM
 # (local time), and work otherwise.
 #
-# Apps open one at a time with the window to split focused first. Omarchy's
-# dwindle uses force_split = 2, so each new window lands to the right of or
-# below the focused one. Sizes are then set through the left/top windows,
+# Workspace 2 tiles with dwindle: apps open one at a time with the window to
+# split focused first, and Omarchy's force_split = 2 puts each new window to
+# the right of or below it. Sizes are set through the left/top windows,
 # because an exact resize on a right/bottom tile moves the wrong edge.
+#
+# Workspace 10 scrolls (see workspaces.lua): each new window opens as a column
+# to the right of the focused one, stack() tucks it under the column to its
+# left, and widths are fractions of the screen.
 
 dispatch() { hyprctl dispatch "$1" >/dev/null; }
 
@@ -90,12 +96,20 @@ resize() {
 
 height_of() { hyprctl clients -j | jq -r --arg a "$1" '.[] | select(.address == $a) | .size[1]'; }
 
+# Scrolling-layout helpers for workspace 10.
+stack() { [[ -n $1 ]] && focus "$1" && dispatch 'hl.dsp.window.move({ direction = "l" })'; }
+column_width() { [[ -n $1 ]] && focus "$1" && dispatch "hl.dsp.layout(\"colresize $2\")"; }
+set_height() {
+  [[ -n $1 ]] || return
+  dispatch "hl.dsp.window.resize({ x = 0, y = $(( $2 - $(height_of "$1") )), relative = true, window = \"address:$1\" })"
+}
+
 # DP-2 / workspace 2
 dispatch 'hl.dsp.focus({ workspace = "2" })'
 if [[ $mode == off ]]; then
   discord=$(open discord discord)
   focus "$discord"; chatgpt=$(open chatgpt chatgpt)
-  resize "$discord" 1074 "$(height_of "$discord")"
+  resize "$discord" 1377 "$(height_of "$discord")"
 else
   slack=$(open slack slack)
   focus "$slack"; chatgpt=$(open chatgpt chatgpt)
@@ -107,11 +121,20 @@ else
   resize "$chatgpt" 584 860
 fi
 
-# DP-1 / workspace 10
+# DP-1 / workspace 10: Claude with a second app under it, Zen to the right.
 dispatch 'hl.dsp.focus({ workspace = "10" })'
 claude=$(open com.anthropic.Claude claude-desktop)
 focus "$claude"; zen=$(open zen zen-browser)
-focus "$claude"; agent=$(open org.omarchy.agent "omarchy agent")
-resize "$claude" 622 469
+if [[ $mode == off ]]; then
+  focus "$claude"; under=$(open foot foot)
+  stack "$under"
+  column_width "$claude" 0.324   # about 606px
+  set_height "$claude" 873
+else
+  focus "$claude"; under=$(open org.omarchy.agent "omarchy agent")
+  stack "$under"
+  column_width "$claude" 0.332   # about 622px
+  set_height "$claude" 469
+fi
 
 dispatch 'hl.dsp.focus({ workspace = "10" })'
