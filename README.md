@@ -21,12 +21,14 @@ Built for **two 1920×1080 monitors**: `DP-1` (main, left) and `DP-2` (right).
 ## Install
 
 ```bash
-git clone https://github.com/truenito/goat ~/projects/desktop/omarchy/goat
-cd ~/projects/desktop/omarchy/goat
+git clone https://github.com/truenito/goat ~/.local/share/goat
+cd ~/.local/share/goat
 ./install.sh
 ```
 
-Everything is linked back to the repo, so edit files there. `./uninstall.sh`
+Any folder works; `~/.local/share/goat` sits beside Omarchy's own data.
+Everything is linked back to the repo, so keep it where you cloned it and
+edit files there. `./uninstall.sh`
 undoes it. Want only the colours and wallpapers? Use
 [truenito/omarchy-goat-theme](https://github.com/truenito/omarchy-goat-theme).
 
