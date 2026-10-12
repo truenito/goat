@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# goat: start the sun-following wallpaper daemon for this session.
+
+GOAT="$(cd "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/.." && pwd)"
+
+setsid "$GOAT/daynight/daynight" daemon </dev/null >>"$HOME/.local/state/omarchy/goat-daynight.log" 2>&1 &

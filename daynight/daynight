@@ -1,0 +1,124 @@
+#!/bin/bash
+
+# Wallpapers that follow the sun, for the goat theme.
+#
+#   daynight daemon         keep the wallpaper in step with sunrise/sunset
+#   daynight apply <phase>  show the day or night variant now
+#                           (phase: day, night, or auto = last known phase)
+#
+# Wallpapers pair by name: <name>.jpg is the day image and <name>-night.jpg its
+# night variant. Nothing happens unless goat is the active theme and the current
+# wallpaper has a counterpart, so an unpaired pick from the switcher is kept.
+
+THEME="goat"
+STATE="$HOME/.local/state/omarchy"
+PHASE_FILE="$STATE/goat-daynight.phase"
+WEATHER_FILE="$STATE/settings/weather.json"
+LOCK="${XDG_RUNTIME_DIR:-/tmp}/goat-daynight.lock"
+RETRY_SECONDS=300
+
+say() {
+  echo "[$(date '+%F %T')] $*"
+}
+
+apply() {
+  local phase=$1 current dir file stem ext target=""
+
+  [[ $phase == auto ]] && phase=$(cat "$PHASE_FILE" 2>/dev/null)
+  [[ $phase == day || $phase == night ]] || return 0
+  echo "$phase" >"$PHASE_FILE"
+
+  [[ $(cat "$STATE/current/theme.name" 2>/dev/null) == "$THEME" ]] || return 0
+  current=$(readlink -f "$STATE/current/background" 2>/dev/null) || return 0
+
+  dir=${current%/*}
+  file=${current##*/}
+  stem=${file%.*}
+  ext=${file##*.}
+
+  if [[ $phase == night && $stem != *-night ]]; then
+    target="$dir/$stem-night.$ext"
+  elif [[ $phase == day && $stem == *-night ]]; then
+    target="$dir/${stem%-night}.$ext"
+  fi
+
+  [[ -n $target && -f $target ]] && omarchy theme bg set "$target"
+  return 0
+}
+
+# Latitude and longitude: the Omarchy weather location if one is saved,
+# otherwise a city guess from the public IP (wttr.in) geocoded by Open-Meteo.
+locate() {
+  local lat="" lon="" city geo
+
+  if [[ -f $WEATHER_FILE ]]; then
+    read -r lat lon < <(jq -r '"\(.latitude // "") \(.longitude // "")"' "$WEATHER_FILE" 2>/dev/null)
+  fi
+
+  if [[ -z $lat || -z $lon ]]; then
+    city=$(curl -fsS --max-time 4 "https://wttr.in/?format=%l" 2>/dev/null) || return 1
+    city=${city%%,*}
+    [[ -n $city ]] || return 1
+    geo=$(curl -fsS --max-time 5 -G "https://geocoding-api.open-meteo.com/v1/search" \
+      --data-urlencode "name=$city" --data "count=1" 2>/dev/null) || return 1
+    read -r lat lon < <(jq -r '.results[0] | "\(.latitude // "") \(.longitude // "")"' <<<"$geo" 2>/dev/null)
+  fi
+
+  [[ -n $lat && -n $lon ]] && echo "$lat $lon"
+}
+
+# Epoch seconds of today's sunrise, today's sunset, and tomorrow's sunrise.
+sun_times() {
+  local lat lon json
+
+  read -r lat lon < <(locate)
+  [[ -n $lat ]] || return 1
+
+  json=$(curl -fsS --max-time 6 -G "https://api.open-meteo.com/v1/forecast" \
+    --data "latitude=$lat" --data "longitude=$lon" \
+    --data "daily=sunrise,sunset" --data "timezone=auto" --data "forecast_days=2" 2>/dev/null) || return 1
+
+  jq -r '.daily | .sunrise[0], .sunset[0], .sunrise[1]' <<<"$json" 2>/dev/null |
+    while read -r stamp; do date -d "$stamp" +%s; done | paste -sd' '
+}
+
+daemon() {
+  local rise set next_rise now phase next
+
+  # One daemon per session. Children close fd 9 so a stray sleep can't keep
+  # the lock alive after the daemon is gone.
+  exec 9>"$LOCK"
+  flock -n 9 || exit 0
+  say "started"
+
+  while true; do
+    read -r rise set next_rise < <(sun_times)
+    if [[ ! $next_rise =~ ^[0-9]+$ ]]; then
+      say "sun times unavailable, retrying in ${RETRY_SECONDS}s"
+      sleep "$RETRY_SECONDS" 9>&-
+      continue
+    fi
+
+    now=$(date +%s)
+    if (( now < rise )); then
+      phase=night next=$rise
+    elif (( now < set )); then
+      phase=day next=$set
+    else
+      phase=night next=$next_rise
+    fi
+
+    apply "$phase"
+    say "$phase until $(date -d "@$next" '+%F %T')"
+    sleep $(( next - now )) 9>&-
+  done
+}
+
+case "${1:-}" in
+  daemon) daemon ;;
+  apply) apply "${2:-auto}" ;;
+  *)
+    echo "Usage: daynight daemon | daynight apply [day|night|auto]" >&2
+    exit 1
+    ;;
+esac

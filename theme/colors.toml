@@ -1,0 +1,39 @@
+# Goat — a quiet mountain theme by gvbrl.
+# Dark walnut and warm cream, with light-brown highlights and deep jade kept
+# for borders and directories. Taken from the foggy-forest wallpapers.
+mode = "dark"
+
+accent = "#c4a77d"
+selection = "#3b362e"
+muted = "#6a655b"
+
+# Deep jade, a cool green that sits well against dark walnut tones.
+hyprland_active_border = "rgba(2f7d52ee) rgba(1c5838ee) 45deg"
+
+background = "#14110e"
+dark_background = "#0f0d0b"
+darker_background = "#0b0908"
+lighter_background = "#221d19"
+
+foreground = "#e8e3d6"
+dark_foreground = "#b3ac9a"
+light_foreground = "#efebe1"
+bright_foreground = "#f6f3eb"
+
+red = "#b0675a"
+yellow = "#c9a85c"
+orange = "#c08048"
+green = "#6f9a6a"
+cyan = "#3a7a59"
+blue = "#6a86a0"
+magenta = "#9a7a96"
+brown = "#6b5a45"
+
+bright_red = "#cf8a7c"
+bright_yellow = "#e2c47e"
+bright_orange = "#dca06c"
+bright_green = "#93b98d"
+bright_cyan = "#579a77"
+bright_blue = "#8ea8c0"
+bright_magenta = "#b99bb5"
+bright_brown = "#8f7a60"

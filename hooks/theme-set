@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# goat: after any theme change, retheme Zen and GTK apps from the new colors,
+# and if goat was applied, show the wallpaper for the time of day (Omarchy
+# picks the first one alphabetically, which is a -night image).
+
+GOAT="$(cd "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/.." && pwd)"
+
+"$GOAT/harmony/harmony"
+[[ $1 == goat ]] && "$GOAT/daynight/daynight" apply auto
+exit 0

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "bibek.lock",
+    "url": "https://github.com/BibekBhusal0/omarchy-better-lock.git"
+  },
+  {
+    "id": "omaplug",
+    "url": "https://github.com/fross100/omaplug.git"
+  },
+  {
+    "id": "omarchy-resizeable.resizeable",
+    "url": "https://github.com/v3moreno/omarchy-resizeable.git"
+  },
+  {
+    "id": "robzolkos.github",
+    "url": "https://github.com/robzolkos/omarchy-github.git"
+  },
+  {
+    "id": "rogergdot.forcequit",
+    "url": "https://github.com/RogerGdot/omarchy-forcequit.git"
+  },
+  {
+    "id": "tmn73.calendar",
+    "url": "https://github.com/tmn73/omarchy-calendar.git"
+  }
+]

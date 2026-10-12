@@ -1,0 +1,109 @@
+{
+  "bar": {
+    "centerAnchor": "omarchy.clock",
+    "layout": {
+      "center": [
+        {
+          "id": "omarchy.indicators"
+        },
+        {
+          "id": "omarchy.keyboard-layout"
+        },
+        {
+          "id": "omarchy.weather"
+        },
+        {
+          "agendaPlacement": "below",
+          "announceLeadMinutes": 5,
+          "duringEvent": "firstMinutes",
+          "format": "dddd h:mm AP",
+          "id": "tmn73.calendar",
+          "showNextUp": false,
+          "showQuickAdd": false,
+          "showShortcutLegend": false,
+          "showUpcomingDays": false,
+          "showWorkingLocation": true,
+          "showYearProgress": false,
+          "weekStartDay": "monday"
+        },
+        {
+          "id": "omarchy.system-update"
+        }
+      ],
+      "left": [
+        {
+          "id": "omarchy.menu"
+        },
+        {
+          "id": "omarchy.workspaces"
+        },
+        {
+          "id": "robzolkos.github",
+          "contributionsPosition": "Middle (above repositories)",
+          "includeArchived": false,
+          "linkBehavior": "Browser tab",
+          "refreshIntervalSec": 3600,
+          "repositoryScope": "Owned and organizations",
+          "iconAlwaysUnlit": false
+        }
+      ],
+      "right": [
+        {
+          "id": "omarchy.tray"
+        },
+        {
+          "id": "rogergdot.forcequit"
+        },
+        {
+          "autoCheckIntervalHours": 24,
+          "autoCheckUpdates": true,
+          "id": "omaplug"
+        },
+        {
+          "id": "omarchy.agents"
+        },
+        {
+          "id": "omarchy.bluetooth"
+        },
+        {
+          "id": "omarchy.network"
+        },
+        {
+          "id": "omarchy.audio"
+        },
+        {
+          "id": "omarchy.monitor"
+        },
+        {
+          "id": "omarchy.power"
+        }
+      ]
+    },
+    "position": "top",
+    "transparent": false
+  },
+  "cloneSourceRestores": [
+    "gvbrl.notifications",
+    "bibek.lock"
+  ],
+  "disabledPlugins": [
+    "omarchy.notifications",
+    "omarchy.lock"
+  ],
+  "idle": {
+    "lock": 300,
+    "screensaver": 150
+  },
+  "plugins": [
+    {
+      "id": "gvbrl.notifications"
+    },
+    {
+      "id": "omarchy-resizeable.resizeable"
+    },
+    {
+      "id": "bibek.lock"
+    }
+  ],
+  "version": 1
+}
