@@ -1,6 +1,6 @@
 # Goat
 
-*A quiet mountain look and feel for [Omarchy](https://omarchy.org/), by gvbrl.*
+*A quiet mountain look and feel for [Omarchy](https://omarchy.org/), by truenito.*
 
 Above the tree line the fog rolls in slowly. The pines go soft and grey, and
 somewhere on the ridge a goat stands perfectly still, sure-footed and in no
@@ -67,6 +67,70 @@ Apps Omarchy already themes from `colors.toml` follow goat automatically:
 terminals, Brave and Chromium, VS Code, Obsidian, Neovim, btop, tmux, and the
 Claude app.
 
+## Hotkeys
+
+Goat keeps every Omarchy shortcut and adds these (`hypr/bindings.lua`):
+
+| Keys | What it does |
+|---|---|
+| Tap `Super` alone | Opens the Omarchy menu, same as `Super` + `Space` |
+| `Super` + `W` | Closes the focused window. A Steam window quits Steam completely instead of hiding it in the background |
+| `Super` + `Ctrl` + `N` | Toggles a gentle nightlight at 5500K (Omarchy's stock one is a stronger 4000K) |
+| `End` | Rebuilds the **work layout** across both monitors (see [Layouts](#layouts)) |
+| `Super` + `End` | Rebuilds the **off-work layout**: quits Slack and puts Discord in its place |
+| `XF86Tools` | Deafens in Discord, even when Discord isn't focused |
+| `XF86Launch5` | Mutes in Discord, even when Discord isn't focused |
+
+### Layouts
+
+Goat arranges your apps into a saved layout at login, and `End` or
+`Super` + `End` put everything back whenever windows have drifted. Both are
+handled by `hypr/scripts/startup-layout.sh`.
+
+**Work layout** (`End`, and at login on weekdays from 6 AM to 7 PM):
+
+```
+DP-2 · workspace 2                       DP-1 · workspace 10
+┌─────────┬───────────┬─────────┐        ┌──────────────┬──────────┐
+│         │  ChatGPT  │         │        │    Claude    │          │
+│  Slack  ├───────────┤ Discord │        ├──────────────┤   Zen    │
+│         │ Terminal  │         │        │  Claude Code │          │
+└─────────┴───────────┴─────────┘        └──────────────┴──────────┘
+```
+
+**Off-work layout** (`Super` + `End`, and at login on evenings and weekends):
+
+```
+DP-2 · workspace 2                       DP-1 · workspace 10
+┌─────────────┬─────────────────┐        ┌──────────────┬──────────┐
+│             │                 │        │    Claude    │          │
+│   Discord   │     ChatGPT     │        ├──────────────┤   Zen    │
+│             │                 │        │  Claude Code │          │
+└─────────────┴─────────────────┘        └──────────────┴──────────┘
+```
+
+Off-work quits Slack, and a terminal that's already open is kept out of
+sight. The right-hand monitor is the same in both.
+
+Rebuilding never closes or restarts what's already running. Open windows are
+moved back into place and resized; an app is launched only if it isn't open,
+so the first `End` of the day can take a moment while apps start. Fullscreen
+or floating windows in the layout are returned to normal tiling first. The
+focus ends on workspace 10.
+
+To use different apps, order or hours, see
+[Guide: your own apps, order and workspace keys](#guide-your-own-apps-order-and-workspace-keys).
+
+### Other keys
+
+The Discord keys are the two extra keys on truenito's keyboard. They send
+`Ctrl` + `Shift` + `D` and `Ctrl` + `Shift` + `M` to Discord, so set those in
+Discord Settings → Keybinds.
+
+Omarchy's own shortcuts still apply, for example `Super` + `1`…`0` to switch
+workspace and `Super` + `Shift` + `1`…`0` to move a window there. See them all
+with `omarchy menu keybindings --print`.
+
 ## Changing things
 
 | To change | Edit | Then |
@@ -79,7 +143,7 @@ Claude app.
 
 ## Make it yours
 
-Some of goat is tuned to gvbrl's desk; adjust these before using it:
+Some of goat is tuned to truenito's desk; adjust these before using it:
 
 - `hypr/monitors.lua` sets the two 1920×1080 outputs, `DP-1` left and `DP-2`
   right. Check your output names with `hyprctl monitors all`.
@@ -92,6 +156,91 @@ Some of goat is tuned to gvbrl's desk; adjust these before using it:
 
 `input.lua` (keyboard layout, mouse) stays per-machine and isn't part of goat.
 
+## Guide: your own apps, order and workspace keys
+
+### How the startup layout works
+
+`hypr/scripts/startup-layout.sh` builds the layout one window at a time:
+
+```bash
+dispatch 'hl.dsp.focus({ workspace = "2" })'   # go to workspace 2
+slack=$(open slack slack)                       # first app fills the workspace
+focus "$slack"; chatgpt=$(open chatgpt chatgpt) # next app splits Slack
+resize "$slack" 1074 "$(height_of "$slack")"   # then set sizes
+```
+
+- **`open <window-class> <command>`** brings back that app's window, or runs
+  the command if it isn't open.
+- **Order is the split.** Each new window splits the window focused just
+  before it, landing to its right (or below it, if that window is taller than
+  wide). So `focus "$slack"` before opening ChatGPT puts ChatGPT next to Slack.
+- **`resize <window> <width> <height>`** sets a size in pixels. Resize the left
+  or top window of a pair; resizing the right or bottom one moves the wrong edge.
+- **`LAYOUT_CLASSES`** near the top lists every app the script manages. It
+  parks them out of sight before rebuilding, so the layout comes out the same
+  every time.
+- The **work** and **off-work** layouts are the two branches of the
+  `if [[ $mode == off ]]` block. `auto` (used at login) picks off-work on
+  weekends and on weekdays before 6 AM or from 7 PM; change those hours on the
+  `if (( dow >= 6 || hour < 6 || hour >= 19 ))` line.
+
+### Swap an app
+
+1. Open the app and find its window class:
+
+   ```bash
+   hyprctl activewindow -j | jq -r .class
+   ```
+
+2. In `startup-layout.sh`, replace the app's `open` line and add the class to
+   `LAYOUT_CLASSES`. For example, Spotify instead of ChatGPT:
+
+   ```bash
+   LAYOUT_CLASSES=(slack Spotify discord foot com.anthropic.Claude zen org.omarchy.agent)
+   ...
+   focus "$slack"; spotify=$(open Spotify spotify)
+   ```
+
+   Then rename any later `$chatgpt` references to `$spotify`.
+
+3. Press `End` to rebuild the layout and check it.
+
+To add an app, add another `focus …; name=$(open class command)` line wherever
+it should split in. To drop one, delete its line. To skip the startup layout
+completely, remove the `exec_on_start` line from `hypr/autostart.lua`.
+
+### Change where workspaces live
+
+`hypr/workspaces.lua` pins each workspace to a monitor:
+
+```lua
+hl.workspace_rule({ workspace = "2", monitor = "DP-2", persistent = true, default = true })
+```
+
+Change `workspace` or `monitor` to taste. If you renumber a workspace, also
+change the matching `hl.dsp.focus({ workspace = "…" })` line in
+`startup-layout.sh`.
+
+### Change workspace hotkeys
+
+Omarchy binds `Super` + `1`…`0` to workspaces 1–10. Add your own in
+`hypr/bindings.lua`; for example, jump straight to the two layout workspaces:
+
+```lua
+o.bind("SUPER + ALT + C", "Chat workspace", hl.dsp.focus({ workspace = "2" }))
+o.bind("SUPER + ALT + W", "Work workspace", hl.dsp.focus({ workspace = "10" }))
+```
+
+To move an existing key, unbind it first, then bind it again. Number keys are
+written as key codes: `code:10` is `1` through `code:19` for `0`.
+
+```lua
+hl.unbind("SUPER + code:19")
+o.bind("SUPER + code:19", "Switch to workspace 2", hl.dsp.focus({ workspace = "2" }))
+```
+
+Hyprland reloads when you save. Check for mistakes with `hyprctl configerrors`.
+
 ## Wallpapers that follow the sun
 
 Each day the daemon looks up sunrise and sunset for your location, from your
@@ -102,5 +251,5 @@ Log: `~/.local/state/omarchy/goat-daynight.log`.
 
 ## License
 
-MIT, see `LICENSE`. `shell/plugins/gvbrl.notifications` is adapted from
+MIT, see `LICENSE`. `shell/plugins/truenito.notifications` is adapted from
 Omarchy's built-in notifications plugin (MIT).

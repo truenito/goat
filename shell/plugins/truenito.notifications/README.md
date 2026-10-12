@@ -1,4 +1,4 @@
-# My Notifications (`gvbrl.notifications`)
+# My Notifications (`truenito.notifications`)
 
 goat's notification service for the Omarchy shell: popups, do-not-disturb,
 and history. It started as Omarchy's built-in `omarchy.notifications` plugin

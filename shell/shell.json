@@ -83,7 +83,7 @@
     "transparent": false
   },
   "cloneSourceRestores": [
-    "gvbrl.notifications",
+    "truenito.notifications",
     "bibek.lock"
   ],
   "disabledPlugins": [
@@ -96,7 +96,7 @@
   },
   "plugins": [
     {
-      "id": "gvbrl.notifications"
+      "id": "truenito.notifications"
     },
     {
       "id": "omarchy-resizeable.resizeable"

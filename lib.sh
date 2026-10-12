@@ -10,7 +10,7 @@ goat_links() {
   cat <<EOF
 theme                             $OMARCHY_CONFIG/themes/goat
 icons/Goat-Cream                  $HOME/.local/share/icons/Goat-Cream
-shell/plugins/gvbrl.notifications $OMARCHY_CONFIG/plugins/gvbrl.notifications
+shell/plugins/truenito.notifications $OMARCHY_CONFIG/plugins/truenito.notifications
 hooks/post-boot                   $OMARCHY_CONFIG/hooks/post-boot.d/goat
 hooks/theme-set                   $OMARCHY_CONFIG/hooks/theme-set.d/goat
 hypr/hyprland.lua                 $CONFIG/hypr/hyprland.lua
