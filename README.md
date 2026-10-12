@@ -21,8 +21,8 @@ Built for **two 1920×1080 monitors**: `DP-1` (main, left) and `DP-2` (right).
 ## Install
 
 ```bash
-git clone https://github.com/truenito/goat ~/projects/desktop/omarchy
-cd ~/projects/desktop/omarchy
+git clone https://github.com/truenito/goat ~/projects/desktop/omarchy/goat
+cd ~/projects/desktop/omarchy/goat
 ./install.sh
 ```
 
