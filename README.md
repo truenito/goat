@@ -1,13 +1,13 @@
-# Goat
+# goat
 
 *A quiet mountain look and feel for [Omarchy](https://omarchy.org/), by truenito.*
 
 Above the tree line the fog rolls in slowly. The pines go soft and grey, and
 somewhere on the ridge a goat stands perfectly still, sure-footed and in no
-hurry at all. Goat is that moment kept on your desktop: calm, unhurried, a
+hurry at all. goat is that moment kept on your desktop: calm, unhurried, a
 little old-fashioned in the best way.
 
-Goat is the whole desktop, not just colours:
+goat is the whole desktop, not just colours:
 
 - **Dark walnut** backgrounds and **warm cream** text, with light-brown highlights
 - **Deep jade** window borders and focus rings, like polished stone on walnut
@@ -32,7 +32,7 @@ undoes it. Want only the colours and wallpapers? Use
 
 ## Hotkeys
 
-Goat keeps every Omarchy shortcut and adds:
+goat keeps every Omarchy shortcut and adds:
 
 | Keys | What it does |
 |---|---|

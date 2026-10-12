@@ -10,11 +10,11 @@ set -uo pipefail
 source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/lib.sh"
 
 step "Stopping the day/night wallpaper daemon"
-pkill -f "$GOAT/daynight/daynight daemon" 2>/dev/null
+pkill -f "$REPO/daynight/daynight daemon" 2>/dev/null
 rm -f "$HOME/.local/state/omarchy/goat-daynight.phase"
 
 step "Removing generated Zen and GTK styles"
-"$GOAT/harmony/harmony" --clean
+"$REPO/harmony/harmony" --clean
 
 step "Unlinking goat"
 while read -r _ dest; do

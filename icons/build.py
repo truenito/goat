@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the Goat-Cream folder icons as scalable SVGs.
+"""Generate the goat-cream folder icons as scalable SVGs.
 
 Each folder is drawn here (crisp corners, soft gradient, fine highlight) and
 the special folders get Yaru's symbolic glyph embossed on the front panel.
@@ -11,8 +11,8 @@ import shutil
 import sys
 from pathlib import Path
 
-# Output directory: the first argument, or Goat-Cream next to this script.
-OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).parent / "Goat-Cream"
+# Output directory: the first argument, or goat-cream next to this script.
+OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).parent / "goat-cream"
 GLYPHS = Path("/usr/share/icons/Yaru/scalable/places")
 
 # Palette: creamy light-brown front, walnut back and tab.
@@ -107,8 +107,8 @@ def main():
 
     (OUT / "index.theme").write_text(
         "[Icon Theme]\n"
-        "Name=Goat-Cream\n"
-        "Comment=Cream folders for the Goat theme\n"
+        "Name=goat-cream\n"
+        "Comment=Cream folders for the goat theme\n"
         "Inherits=Yaru-wartybrown,Yaru,Humanity,hicolor\n"
         "Example=folder\n"
         "Directories=scalable/places\n"

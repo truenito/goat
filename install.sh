@@ -14,7 +14,7 @@ source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/lib.sh"
 
 SHELL_JSON="$OMARCHY_CONFIG/shell.json"
 SHELL_TOML="$OMARCHY_CONFIG/shell.toml"
-PLUGINS_LIST="$GOAT/shell/plugins.json"
+PLUGINS_LIST="$REPO/shell/plugins.json"
 
 require() {
   local missing=() cmd
@@ -49,9 +49,9 @@ link_all() {
 }
 
 build_icons() {
-  step "Building the Goat-Cream folder icons"
-  python3 "$GOAT/icons/build.py"
-  gtk-update-icon-cache -q -f -t "$GOAT/icons/Goat-Cream" 2>/dev/null || true
+  step "Building the goat-cream folder icons"
+  python3 "$REPO/icons/build.py"
+  gtk-update-icon-cache -q -f -t "$REPO/icons/goat-cream" 2>/dev/null || true
 }
 
 install_plugins() {
@@ -71,12 +71,12 @@ restore_shell() {
   if [[ -f $SHELL_JSON ]]; then
     cp "$SHELL_JSON" "$SHELL_JSON.goat-bak"
     # Saved settings win; keys the snapshot doesn't mention are kept.
-    jq -s '.[0] * .[1]' "$SHELL_JSON.goat-bak" "$GOAT/shell/shell.json" >"$SHELL_JSON"
+    jq -s '.[0] * .[1]' "$SHELL_JSON.goat-bak" "$REPO/shell/shell.json" >"$SHELL_JSON"
   else
-    cp "$GOAT/shell/shell.json" "$SHELL_JSON"
+    cp "$REPO/shell/shell.json" "$SHELL_JSON"
   fi
   [[ -f $SHELL_TOML ]] && cp "$SHELL_TOML" "$SHELL_TOML.goat-bak"
-  cp "$GOAT/shell/shell.toml" "$SHELL_TOML"
+  cp "$REPO/shell/shell.toml" "$SHELL_TOML"
   omarchy-shell shell rescanPlugins >/dev/null 2>&1 || true
 }
 
@@ -92,8 +92,8 @@ reload_hyprland() {
 
 start_daynight() {
   step "Starting the day/night wallpaper daemon"
-  pkill -f "$GOAT/daynight/daynight daemon" 2>/dev/null || true
-  bash "$GOAT/hooks/post-boot"
+  pkill -f "$REPO/daynight/daynight daemon" 2>/dev/null || true
+  bash "$REPO/hooks/post-boot"
 }
 
 apply_theme() {
@@ -104,8 +104,8 @@ apply_theme() {
 
 export_settings() {
   step "Saving shell settings into the repo"
-  cp "$SHELL_JSON" "$GOAT/shell/shell.json"
-  cp "$SHELL_TOML" "$GOAT/shell/shell.toml"
+  cp "$SHELL_JSON" "$REPO/shell/shell.json"
+  cp "$SHELL_TOML" "$REPO/shell/shell.toml"
 
   step "Saving the plugin list"
   local dir id url entries=()
@@ -113,7 +113,7 @@ export_settings() {
     dir=${dir%/}
     [[ -f $dir/manifest.json ]] || continue
     # Plugins that live in this repo are linked, not installed from git.
-    [[ $(realpath "$dir") == "$GOAT"/* ]] && continue
+    [[ $(realpath "$dir") == "$REPO"/* ]] && continue
     id=$(jq -r '.id' "$dir/manifest.json")
     url=$(git -C "$dir" remote get-url origin 2>/dev/null || true)
     if [[ -z $url ]]; then

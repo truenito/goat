@@ -4,8 +4,8 @@
 # and if goat was applied, show the wallpaper for the time of day (Omarchy
 # picks the first one alphabetically, which is a -night image).
 
-GOAT="$(cd "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/.." && pwd)"
+REPO="$(cd "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/.." && pwd)"
 
-"$GOAT/harmony/harmony"
-[[ $1 == goat ]] && "$GOAT/daynight/daynight" apply auto
+"$REPO/harmony/harmony"
+[[ $1 == goat ]] && "$REPO/daynight/daynight" apply auto
 exit 0

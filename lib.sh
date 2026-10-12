@@ -1,6 +1,6 @@
 # Shared by install.sh and uninstall.sh. Source it; don't run it.
 
-GOAT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG="$HOME/.config"
 OMARCHY_CONFIG="$CONFIG/omarchy"
 
@@ -9,7 +9,7 @@ OMARCHY_CONFIG="$CONFIG/omarchy"
 goat_links() {
   cat <<EOF
 theme                             $OMARCHY_CONFIG/themes/goat
-icons/Goat-Cream                  $HOME/.local/share/icons/Goat-Cream
+icons/goat-cream                  $HOME/.local/share/icons/goat-cream
 shell/plugins/truenito.notifications $OMARCHY_CONFIG/plugins/truenito.notifications
 hooks/post-boot                   $OMARCHY_CONFIG/hooks/post-boot.d/goat
 hooks/theme-set                   $OMARCHY_CONFIG/hooks/theme-set.d/goat
@@ -27,9 +27,9 @@ step() {
   printf '\n==> %s\n' "$*"
 }
 
-# Point $2 at $GOAT/$1. A real file already there is kept as $2.goat-bak.
+# Point $2 at $REPO/$1. A real file already there is kept as $2.goat-bak.
 link() {
-  local src="$GOAT/$1" dest="$2"
+  local src="$REPO/$1" dest="$2"
   mkdir -p "$(dirname "$dest")"
   if [[ -e $dest && ! -L $dest ]]; then
     mv "$dest" "$dest.goat-bak"
@@ -41,7 +41,7 @@ link() {
 # Remove $1 if it links into this repo, and put back what link() set aside.
 unlink_goat() {
   local dest="$1"
-  [[ -L $dest && $(readlink "$dest") == "$GOAT"/* ]] || return 0
+  [[ -L $dest && $(readlink "$dest") == "$REPO"/* ]] || return 0
   rm "$dest"
   [[ -e $dest.goat-bak ]] && mv "$dest.goat-bak" "$dest"
   return 0
